@@ -4,9 +4,10 @@
 
 Type classes are somewhat similar to Java interfaces or Scala traits, in that they specify a set of methods that a type must implement in order to be a member of that type class.
 
-For example, you might have a type class called `Compat[A]`, which specifies that classes must define an `isCmpatible` method in order to be a member of `Compat`:
+For example, you might have a type class called `Compat[A]`, which specifies that classes must define an `isCompatible` method in order to be a member of `Compat`:
 
 ```scala
+/** The class of types that have some notion of "compatibility" */
 trait Compat[A] { 
   /** Checks whether `a1` and `a2` are compatible with each other */
   def isCompatible(a1: A, a2: A): Boolean
@@ -87,7 +88,7 @@ When dealing with type classes, we use the other kind of implicits: implicit par
 
 ```scala
 def findCompatiblePairs[A](pairs: Seq[(A, A)])(implicit evidence: Compat[A]): Seq[(A, A)] = {
-  pairs.filter { case (a1, a2) => implicitly[Compat[A]].isCompatible(a1, a2) }
+  pairs.filter { case (a1, a2) => evidence.isCompatible(a1, a2) }
 }
 ```
 
@@ -109,7 +110,7 @@ Inside the function, when you want to use the evidence in order to get at the ty
 
 ```scala
 def findCompatiblePairs[A : Compat](pairs: Seq[(A, A)]): Seq[(A, A)] = {
-  
+  pairs.filter { case (a1, a2) => implicitly[Compat[A]].isCompatible(a1, a2) }
 }
 ```
 
