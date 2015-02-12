@@ -13,11 +13,26 @@ case class Team(people: Seq[Person])
 
 object JSONables {
 
+  // Sorry, should have put this method here from the start, as it's useful to re-use it in the implicits
+  def serialize[A : JSONable](a: A): String = implicitly[JSONable[A]].toJson(a)
+
   implicit val stringJSONable = new JSONable[String]{ def toJson(a: String) = '"' + a + '"' }
 
   implicit val intJSONable = new JSONable[Int]{ def toJson(a: Int) = a.toString }
 
-  // TODO add more evidence
+  implicit val personJSONable = new JSONable[Person]{ 
+    def toJson(p: Person) = 
+      s"""{"name":${serialize(p.name)},"age":${serialize(p.age)}}"""
+  }
+
+  implicit def seqJSONable[A : JSONable] = new JSONable[Seq[A]] {
+    def toJson(xs: Seq[A]) = 
+      xs.map(x => serialize(x)).mkString("[", ",", "]")
+  }
+
+  implicit val teamJSONable = new JSONable[Team] {
+    def toJson(team: Team) = s"""{"people":${serialize(team.people)}}"""
+  }
 
 }
 
@@ -47,7 +62,5 @@ class HandsOnSpec extends FlatSpec with Matchers {
     serialize(Team(Seq(Person("Chris", 30), Person("Dave", 99)))) should be(
       """{"people":[{"name":"Chris","age":30},{"name":"Dave","age":99}]}""")
   }
-
-  def serialize[A : JSONable](a: A): String = implicitly[JSONable[A]].toJson(a)
 
 }
