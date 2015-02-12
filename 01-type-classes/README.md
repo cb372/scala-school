@@ -72,7 +72,22 @@ So why would we bother doing this? Why not just create a `Compat` trait and make
 
 One reason for using type classes rather than traits is that they are cool and Haskell-y and they make your APIs more sexy.
 
-A more important reason is that they allow **retrospective extension**. TODO explain this.
+A more important reason is that they allow **retrospective polymorphism**, and consequently **retrospective extension**. Usually when you want to make a function polymorphic, the arguments you pass to it have to inherit from a common trait or class. For example:
+
+```scala
+trait Compat { def isCompatibleWith(other: Compat): Boolean }
+
+class SomeKindOfThing extends Compat { def isCompatibleWith(other: Compat) = ... }
+class OtherKindOfThing extends Compat { def isCompatibleWith(other: Compat) = ... }
+
+def checkCompatibility(thing1: Compat, thing2: Compat) = ...
+```
+
+But this constraint (i.e. that any class we want to pass to our method has to extend a given trait) makes the code less flexible. Any 3rd-party classes that we want to work with (or who want to work with our code) will not extend our `Compat` trait, so we can't pass them to our method.
+
+But with type classes, we lose the "must extend this trait" constraint, so it becomes much easier for our code to work with 3rd-party code whose source we cannot change.
+
+One more argument for using type classes is composability. Once you have evidence that some class `A` is a member of a type class, it's easy to re-use that evidence in order to build evidence about other classes. We'll see this later, in the "Implicit val vs def" section.
 
 ### Downside of type classes
 
@@ -126,5 +141,35 @@ This is called a View Bound, and it means that the function accepts any type A t
 
 ### Implicit `val` vs `def`
 
+If you have a specific type that you want to mark as a member of a type class, you usually use an `implicit val` to do so:
+
+```scala
+implicit val widgetCompat = new Compat[Widget] {
+  def isCompatible(widget1: Widget, widget2: Widget): Boolean = ...
+}
+```
+
+But you can also use an `implicit def`. In this case, you can use type parameters to make your method generic, which means you can compose existing evidence to create new evidence. For example, if you supply the following evidence:
+
+```scala
+implicit val widgetCompat = new Compat[Widget] {
+  def isCompatible(widget1: Widget, widget2: Widget): Boolean = ...
+}
+
+implicit def optionCompat[A : Compat] = new Compat[Option[A]] {
+  def isCompatible(opt1: Option[A], opt2: Option[A]): Boolean = (opt1, opt2) match {
+    case (Some(a1), Some(a2)) => implicitly[Compat[A]].isCompatible(a1, a2)
+    case _ => false
+  }
+}
+```
+
+then the compiler can work out that `Option[Widget]` is also a member of the `Compat` typeclass.
+
 ## Hands on
 
+Just make the tests in [handson.scala](src/test/scala/handson.scala) compile and pass!
+
+## Further reading
+
+[Type Classes as Objects and Implicits](http://ropas.snu.ac.kr/~bruno/papers/TypeClasses.pdf) is the original paper describing how type classes were brought from Haskell to Scala.

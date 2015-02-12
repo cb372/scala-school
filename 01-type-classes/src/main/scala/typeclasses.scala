@@ -34,4 +34,13 @@ object typeclasses extends App {
   println(findCompatiblePairs(pairs))
   println(findCompatiblePairsWithContextBound(pairs))
 
+  implicit def optionCompat[A : Compat] = new Compat[Option[A]] {
+    def isCompatible(opt1: Option[A], opt2: Option[A]): Boolean = (opt1, opt2) match {
+      case (Some(a1), Some(a2)) => implicitly[Compat[A]].isCompatible(a1, a2)
+      case _ => false
+    }
+  }
+
+  val optPairs: Seq[(Option[Widget], Option[Widget])] = Seq(Some(SquarePeg) -> Some(SquareHole), Some(RoundPeg) -> None)
+  println(findCompatiblePairs(optPairs))
 }
