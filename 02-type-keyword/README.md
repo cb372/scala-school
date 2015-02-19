@@ -191,10 +191,11 @@ membership.doStuffWithUser(soulmatesChris) // Doesn't compile
 
 ## Hands on
 
-TODO
+Please implement the missing method in `src/test/scala/handson.scala` to make `sbt test` work.
 
 ## Further reading
 
 * [StackOverflow answer](http://stackoverflow.com/a/1154727/110856) about abstract type members vs generics
 * [Blog post](http://www.artima.com/weblogs/viewpost.jsp?thread=270195) by Bill Venners (ScalaTest lead dev) about abstract type members vs generics
 * Blog post: [Typelevel hackery tricks in Scala](http://www.folone.info/blog/Typelevel-Hackery/)
+* [Blog post](http://archive.today/2Qco) by Daniel Spiewak about a variant of the Cake pattern using abstract type members
