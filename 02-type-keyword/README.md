@@ -77,13 +77,117 @@ If you want a more safe way to do this, you have a few options:
     hasUserViewedArticle(article, user) // Compile error
     ``` 
 
-## Abstract member types
+## Abstract type members
 
-TODO animal problem example
+As you know, traits can contain abstract fields and methods, which have to be implemented by a concrete class:
+
+```
+trait Animal {
+  val numberOfLegs
+  def eat(food: Food): Unit
+  def makeNoise(): Noise
+}
+
+class Cow extends Animal {
+  val numberOfLegs = 4
+  def eat(food: Food) = { ... }
+  def makeNoise(): Noise = { new Moo() }
+}
+```
+
+But they can also contain abstract types:
+
+```
+trait Animal {
+  type FavouriteFood
+  type Call
+
+  def eat(food: FavouriteFood): Unit
+  def makeNoise(): Call
+}
+
+class Cow extends Animal {
+  type FavouriteFood = Grass
+  type Call = Moo
+  def eat(food: Grass) = { ... }
+  def makeNoise(): Moo = { new Moo() }
+}
+```
+
+Of course, you could have done this with generics instead, e.g.
+
+```
+trait Animal[FavouriteFood, Call] {
+  def eat(food: FavouriteFood): Unit
+  def makeNoise(): Call
+}
+
+class Cow extends Animal[Grass, Moo] {
+  def eat(food: Grass) = { ... }
+  def makeNoise(): Moo = { new Moo() }
+}
+```
+
+In this simple case, both approaches work fine, and which one you choose is a matter of taste. 
+
+One situation where type members can reduce boilerplate and make code more readable is when you want to mixin a trait that provides the concrete types:
+
+```
+trait MyTrait[A] { ... }
+
+trait MyIntMixin { self: MyTrait[Int] => ... }
+
+// Using generics, we have to type the `[Int]` bit here as well as in the mixin
+class MyConcreteClass extends MyTrait[Int] with MyIntMixin
+```
+
+```
+// Rewritten using type member approach
+trait MyTrait { type A }
+
+trait MyIntMixin { self: MyTrait => 
+  type A = Int
+  ...
+}
+
+class MyConcreteClass extends MyTrait with MyIntMixin
+```
+
+Bill Venners gives a good real-world example of this situation (see Further Reading).
+
+Martin Odersky also has this to say, but I don't really understand what he means:
+
+>But in practice, when you [use type parameterization] with many different things, it leads to an explosion of parameters, and usually, what's more, in bounds of parameters. At the 1998 ECOOP, Kim Bruce, Phil Wadler, and I had a paper where we showed that as you increase the number of things you don't know, the typical program will grow quadratically. So there are very good reasons not to do parameters, but to have these abstract members, because they don't give you this quadratic blow up.
 
 ## Path dependent types
 
-TODO
+Now we enter "definitely can't do that in Java" territory...
+
+We can make the type of something depend on the *instance* that contains it.
+
+```
+class Service {
+  case class User(id: Int, name: String)
+
+  def doStuffWithUser(user: User): Unit = { println(user) }
+}
+
+val membership = new Service
+val soulmates = new Service
+
+val membershipChris = new membership.User(123, "Chris")
+val soulmatesChris = new soulmates.User(123, "Chris")
+
+membership.doStuffWithUser(membershipChris) // OK
+soulmates.doStuffWithUser(soulmatesChris) // OK
+
+membership.doStuffWithUser(soulmatesChris) // Doesn't compile
+// <console>:12: error: type mismatch;
+// found   : soulmates.User
+//  required: membership.User
+//                membership.doStuffWithUser(soulmatesChris)
+//                                           ^
+```
 
 ## Hands on
 
@@ -91,5 +195,6 @@ TODO
 
 ## Further reading
 
-* [StackOverflow answer](http://stackoverflow.com/a/1154727/110856) about abstract member types vs generics
+* [StackOverflow answer](http://stackoverflow.com/a/1154727/110856) about abstract type members vs generics
+* [Blog post](http://www.artima.com/weblogs/viewpost.jsp?thread=270195) by Bill Venners (ScalaTest lead dev) about abstract type members vs generics
 * Blog post: [Typelevel hackery tricks in Scala](http://www.folone.info/blog/Typelevel-Hackery/)

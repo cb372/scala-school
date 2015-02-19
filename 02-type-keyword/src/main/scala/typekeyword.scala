@@ -33,4 +33,11 @@ object typekeyword extends App {
   // println(hasViewed(taggedUser, taggedArticle)) // compiles
   // println(hasViewed(taggedArticle, taggedArticle)) // doesn't compile
 
+  trait MyTrait { type A }
+
+  trait MyIntMixin { self: MyTrait => 
+    type A = Int
+  }
+
+  class MyConcreteClass extends MyTrait with MyIntMixin
 }
