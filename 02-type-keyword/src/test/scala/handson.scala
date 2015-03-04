@@ -9,7 +9,8 @@ trait Traverser {
   def getChildren(parent: Node): Seq[Node]
 
   def countElements(root: Node): Int = {
-    ??? // TODO implement
+    val children = getChildren(root)
+    1 + children.map(countElements).sum
   }
 }
 
