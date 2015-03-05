@@ -23,11 +23,11 @@ This means that `Function1` is **contravariant** in the type of its argument, an
 
 ## Covariance and contravariance
 
-**Covariance** means that subtype relationships are preserved. If A is a subclass of B, then `List[A]` is a subtype of `List[B]`.
+**Covariance** means that subtype relationships are preserved. If A is a subtype of B, then `List[A]` is a subtype of `List[B]`.
 
-For example, Java's `InputStream` is a subclass of `Closeable`, so you can pass a `List[InputStream]` to any function that wants a `List[Closeable]`.
+For example, Java's `InputStream` is a subtype of `Closeable`, so you can pass a `List[InputStream]` to any function that wants a `List[Closeable]`.
 
-**Contravariance** is the opposite: subtype relationships are reversed. So, if A is a subclass of B, then `Function1[B, String]` is a subclass of `Function1[A, String]`.
+**Contravariance** is the opposite: subtype relationships are reversed. So, if A is a subtype of B, then `Function1[B, String]` is a subtype of `Function1[A, String]`.
 
 For example, if you have a function:
 
