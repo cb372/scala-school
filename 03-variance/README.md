@@ -19,7 +19,7 @@ and `scala.Function1` looks like this:
 trait Function1[-T1, +R] extends AnyRef
 ```
 
-This means that `Function1` IS **covariant** in the type of its argument, and **contravariant** in the type of its result.
+This means that `Function1` is **covariant** in the type of its argument, and **contravariant** in the type of its result.
 
 ## Covariance and contravariance
 
