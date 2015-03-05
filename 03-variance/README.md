@@ -68,15 +68,15 @@ produces the following compilation error:
 
 Mutable data types do not play well with covariance and contravariance. Stealing the explanaition from Wikipedia,
 
->Consider the array type constructor: from the type Animal we can make the type Animal[] ("array of animals"). Should we treat this as
+>Consider the array type constructor: from the type `Animal` we can make the type `Animal[]` ("array of animals"). Should we treat this as
 >
->* Covariant: a Cat[] is an Animal[]
->* Contravariant: an Animal[] is a Cat[]
+>* Covariant: a `Cat[]` is an `Animal[]`
+>* Contravariant: an `Animal[]` is a `Cat[]`
 >* or neither (invariant)?
 >
->If we wish to avoid type errors, and the array supports both reading and writing elements, then only the third choice is safe. Clearly, not every Animal[] can be treated as if it were a Cat[], since a client reading from the array will expect a Cat, but an Animal[] may contain e.g. a Dog. So the contravariant rule is not safe.
+>If we wish to avoid type errors, and the array supports both reading and writing elements, then only the third choice is safe. Clearly, not every `Animal[]` can be treated as if it were a `Cat[]`, since a client reading from the array will expect a `Cat`, but an `Animal[]` may contain e.g. a Dog. So the contravariant rule is not safe.
 >
->Conversely, a Cat[] can not be treated as an Animal[]. It should always be possible to put a Dog into an Animal[]. With covariant arrays this can not be guaranteed to be safe, since the backing store might actually be an array of cats. So the covariant rule is also not safe—the array constructor should be invariant. Note that this is only an issue for mutable arrays; the covariant rule is safe for immutable (read-only) arrays.
+>Conversely, a `Cat[]` can not be treated as an `Animal[]`. It should always be possible to put a `Dog` into an `Animal[]`. With covariant arrays this can not be guaranteed to be safe, since the backing store might actually be an array of cats. So the covariant rule is also not safe—the array constructor should be invariant. Note that this is only an issue for mutable arrays; the covariant rule is safe for immutable (read-only) arrays.
 >
 >This illustrates a general phenomenon. Read-only data types (sources) can be covariant; write-only data types (sinks) can be contravariant. Mutable data types which act as both sources and sinks should be invariant.
 
