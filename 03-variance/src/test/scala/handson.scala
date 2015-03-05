@@ -3,8 +3,8 @@ import org.scalatest._
 class Animal
 class Cat extends Animal
 
-class Covariant[A](value: A)
-class Contravariant[A](value: A)
+class Covariant[+A](value: A)
+class Contravariant[-A](value: A)
 
 class HandsOnSpec extends FlatSpec with Matchers {
 
