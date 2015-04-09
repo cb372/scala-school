@@ -154,3 +154,5 @@ Easter themed!
 * [FAQ about initialization order](http://docs.scala-lang.org/tutorials/FAQ/initialization-order.html)
 
 * [Scala's stackable trait pattern](http://www.artima.com/scalazine/articles/stackable_trait_pattern.html)
+
+* [Another good blog about stackable traits](http://blog.ryannedolan.info/2014/03/scala-pattern-stackable-traits.html)
